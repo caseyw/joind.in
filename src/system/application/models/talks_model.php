@@ -239,12 +239,13 @@ class Talks_model extends Model {
         return $comments;
     }
     
-    public function getPopularTalks($len=7) {
-        if (!ctype_digit((string)$len)) {
-            throw new Exception('Expected length to be a number, received '.$len);
+    public function getPopularTalks($len = 7)
+    {
+        if (!ctype_digit((string) $len)) {
+            throw new Exception('Expected length to be a number, received ' . $len);
         }
 
-        $sql=sprintf('
+        $sql = sprintf('
             select
                 t.talk_title,
                 t.ID,
@@ -264,14 +265,14 @@ class Talks_model extends Model {
                 t.ID
             order by
                 ccount desc
-            limit '.$len.'
+            limit ' . $len . '
         ');
         $query = $this->db->query($sql);
         $talks = $query->result();
         
-        $CI=&get_instance();
-        $CI->load->model('talk_speaker_model','tsm');
-        foreach ($talks as $k=>$talk) {
+        $CI =& get_instance();
+        $CI->load->model('talk_speaker_model', 'tsm');
+        foreach ($talks as $k => $talk) {
             $sql = "select get_talk_rating(" . $talk->ID . ") as tavg";
             $rating_result = $this->db->query($sql)->result();
             $rating = $rating_result[0];
@@ -279,16 +280,18 @@ class Talks_model extends Model {
 
             $talks[$k]->speaker=$CI->tsm->getTalkSpeakers($talk->ID);
         }
+
         return $talks;
     }
-    
+
     /**
      * Get recent talks from any and all events
      *
      * @return array Talk detail information
      */
-    public function getRecentTalks() {
-        $sql=sprintf("
+    public function getRecentTalks()
+    {
+        $sql = sprintf("
             select
               DISTINCT t.ID,
               t.talk_title,
@@ -317,6 +320,7 @@ class Talks_model extends Model {
               tavg>3 and ccount>3
         ", strtotime('-3 months'));
         $query = $this->db->query($sql);
+
         return $query->result();
     }
     
